@@ -2,6 +2,10 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
 	"text/template"
 )
 
@@ -32,4 +36,54 @@ Description: {{ .Description }}
 	}
 
 	return buf.String()
+}
+
+func (app *application) listContacts(w http.ResponseWriter, r *http.Request) {
+	resp, err := json.Marshal(map[string]any{"contacts": app.phonebook.contacts})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Server encountered a error... please try again later")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func (app *application) listContactByID(w http.ResponseWriter, r *http.Request) {
+	idParam := r.PathValue("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil || id < 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "id must be a positive integer.")
+		return
+	}
+
+	if id >= len(app.phonebook.contacts) {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "contact not found")
+		return
+	}
+
+	resp, err := json.Marshal(app.phonebook.contacts[id])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Server encountered a error... please try again later")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+}
+
+func (app *application) createNewContact(w http.ResponseWriter, r *http.Request) {
+	var ctt contact
+
+	err := json.NewDecoder(r.Body).Decode(&ctt)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	app.phonebook.contacts = append(app.phonebook.contacts, ctt)
 }

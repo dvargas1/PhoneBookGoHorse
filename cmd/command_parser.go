@@ -23,5 +23,4 @@ func parseInput(input string, phbook *phonebook) {
 	default:
 		fmt.Printf("Command not recognized %q ignoring input.\nfor help enter 'HELP' or 'h'\n", input)
 	}
-	return
 }
