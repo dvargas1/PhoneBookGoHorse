@@ -1,5 +1,5 @@
 # Change these variables as necessary.
-MAIN_PACKAGE_PATH := ./cmd/
+MAIN_PACKAGE_PATH := ./cmd/phonebook/
 BINARY_NAME := phonebook-go-horse
 
 # ==================================================================================== #
