@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -39,6 +40,13 @@ Description: {{ .Description }}
 }
 
 func (app *application) listContacts(w http.ResponseWriter, r *http.Request) {
+	if rand.Intn(10) > 5 {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "se ferrou hein lek")
+		app.counter500.Inc()
+		return
+	}
+
 	resp, err := json.Marshal(map[string]any{"contacts": app.phonebook.contacts})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
