@@ -31,7 +31,7 @@ func main() {
 	go func() {
 		fmt.Println("starting server on localhost:7331!")
 		app.mux.Handle("/metrics", promhttp.Handler())
-		http.ListenAndServe("localhost:7331", app.mux)
+		http.ListenAndServe("0.0.0.0:7331", app.mux)
 		mychan <- 0
 	}()
 
